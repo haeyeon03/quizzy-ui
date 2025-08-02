@@ -1,7 +1,66 @@
+import { useState, useRef } from "react";
 import useCustomMove from "../hook/useCustomMove";
+import axios from "axios";
+import { setTokens } from "../redux/slice/AuthSlice";
+import { useDispatch } from "react-redux";
+
+const initState = {
+  userId: "",
+  password: "",
+};
 
 const LoginComponent = () => {
-  const { moveToSignup } = useCustomMove();
+  const dispatch = useDispatch();
+  const { moveToQuizList, moveToSignup } = useCustomMove();
+  const [loginForm, setLoginForm] = useState({ ...initState });
+  const userIdInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
+  const handleForm = (e) => {
+    setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = () => {
+    if (isEmpty(loginForm.userId)) {
+      alert("아이디를 입력해 주세요.");
+      userIdInputRef.current.focus();
+      return false;
+    }
+    if (isEmpty(loginForm.password)) {
+      alert("비밀번호를 입력해 주세요.");
+      passwordInputRef.current.focus();
+      return false;
+    }
+
+    axios({
+      method: "post",
+      url: "http://localhost:8080/api/challengers/login",
+      params: {
+        username: loginForm.userId,
+        password: loginForm.password,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.status == 200) {
+          const accessToken = res.data.data.accessToken;
+          const nickname = res.data.data.nickname;
+          // Redux 상태 + localStorage에 저장
+          dispatch(setTokens({ accessToken, nickname }));
+          moveToQuizList();
+        } else {
+          alert("로그인 실패하였습니다.");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const isEmpty = (str) => {
+    return !str || str.trim() === "";
+  };
+
   return (
     <div className="full-background" style={{ height: "100vh" }}>
       <div
@@ -13,30 +72,40 @@ const LoginComponent = () => {
         </h2>
         <form>
           <div className="mb-3">
-            <label htmlFor="inputId" className="form-label fw-semibold">
+            <label htmlFor="userId" className="form-label fw-semibold">
               아이디
             </label>
             <input
               type="text"
               className="form-control"
-              id="inputId"
+              name="userId"
+              id="userId"
               placeholder="example@quizzy.com"
+              onChange={handleForm}
+              ref={userIdInputRef}
               style={{ fontSize: "14px" }}
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="inputPw" className="form-label fw-semibold">
+            <label htmlFor="password" className="form-label fw-semibold">
               비밀번호
             </label>
             <input
               type="password"
               className="form-control"
-              id="inputPw"
+              name="password"
+              id="password"
               placeholder="비밀번호를 입력하세요"
+              onChange={handleForm}
+              ref={passwordInputRef}
               style={{ fontSize: "14px" }}
             />
           </div>
-          <button type="submit" className="btn btn-light w-100 common-btn">
+          <button
+            type="button"
+            className="btn btn-light w-100 common-btn"
+            onClick={handleSubmit}
+          >
             로그인
           </button>
         </form>

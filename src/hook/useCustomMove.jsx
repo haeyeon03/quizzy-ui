@@ -12,11 +12,11 @@ const useCustomMove = () => {
   };
 
   const moveToQuizList = () => {
-    navigate("/quizList");
+    navigate("/quiz");
   };
 
   const moveToMypage = () => {
-    navigate("/myPage");
+    navigate("/mypage");
   };
 
   return {

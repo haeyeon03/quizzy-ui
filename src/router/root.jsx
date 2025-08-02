@@ -1,10 +1,11 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import LoadingPage from "../page/LodingPage";
+import RequireAuth from "../redux/RequireAuth";
 
 const LoginPage = lazy(() => import("../page/LoginPage"));
 const SignupPage = lazy(() => import("../page/SignupPage"));
-const QuizListPage = lazy(() => import("../page/QuizListPage"));
+const QuizPage = lazy(() => import("../page/QuizPage"));
 
 const root = createBrowserRouter([
   // 루트 접속시 /login으로 이동
@@ -33,10 +34,12 @@ const root = createBrowserRouter([
 
   // 홈 & 퀴즈 검색 화면
   {
-    path: "/quizList",
+    path: "/quiz",
     element: (
       <Suspense fallback={<LoadingPage />}>
-        <QuizListPage /> {/* 퀴즈 목록 및 검색 */}
+        <RequireAuth>
+          <QuizPage />
+        </RequireAuth>
       </Suspense>
     ),
   },

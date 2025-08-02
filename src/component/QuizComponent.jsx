@@ -7,7 +7,7 @@ const quizzes = [
   { id: 4, title: "퀴즈 4", img: "https://via.placeholder.com/400x200" },
 ];
 
-const QuizListComponent = () => {
+const QuizComponent = () => {
   const { moveToSignup } = useCustomMove();
   return (
     <div className="full-background">
@@ -89,4 +89,4 @@ const QuizListComponent = () => {
   );
 };
 
-export default QuizListComponent;
+export default QuizComponent;

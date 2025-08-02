@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import useCustomMove from "../hook/useCustomMove";
 
 const initState = {
-  challengerId: "",
+  userId: "",
   nickname: "",
   password: "",
   confirmPassword: "",
@@ -14,19 +14,19 @@ const SignUpComponent = () => {
   const navigate = useNavigate();
   const [signupForm, setSignupForm] = useState({ ...initState });
   const { moveToLogin } = useCustomMove();
-  const challengerIdInputRef = useRef(null);
+  const userIdInputRef = useRef(null);
   const nicknameInputRef = useRef(null);
   const passwordInputRef = useRef(null);
   const confirmPasswordInputRef = useRef(null);
 
-  const handleChangeInfo = (e) => {
+  const handleForm = (e) => {
     setSignupForm({ ...signupForm, [e.target.name]: e.target.value });
   };
 
-  const handleSaveForm = () => {
-    if (isEmpty(signupForm.challengerId)) {
+  const handleSubmit = () => {
+    if (isEmpty(signupForm.userId)) {
       alert("아이디를 입력해 주세요.");
-      challengerIdInputRef.current.focus();
+      userIdInputRef.current.focus();
       return false;
     }
 
@@ -52,7 +52,11 @@ const SignUpComponent = () => {
     axios({
       method: "post",
       url: "http://localhost:8080/api/challengers/",
-      data: signupForm,
+      data: {
+        challengerId: signupForm.userId,
+        nickname: signupForm.nickname,
+        password: signupForm.password,
+      },
     })
       .then((res) => {
         console.log(res);
@@ -87,17 +91,17 @@ const SignUpComponent = () => {
         </h2>
         <form>
           <div className="mb-3">
-            <label htmlFor="challengerId" className="form-label fw-semibold">
+            <label htmlFor="userId" className="form-label fw-semibold">
               아이디
             </label>
             <input
               type="text"
               className="form-control"
-              name="challengerId"
-              id="challengerId"
+              name="userId"
+              id="userId"
               placeholder="example@quizzy.com"
-              onChange={handleChangeInfo}
-              ref={challengerIdInputRef}
+              onChange={handleForm}
+              ref={userIdInputRef}
               style={{ fontSize: "14px" }}
             />
           </div>
@@ -111,7 +115,7 @@ const SignUpComponent = () => {
               name="nickname"
               id="nickname"
               placeholder="닉네임을 입력해주세요"
-              onChange={handleChangeInfo}
+              onChange={handleForm}
               ref={nicknameInputRef}
               style={{ fontSize: "14px" }}
             />
@@ -126,7 +130,7 @@ const SignUpComponent = () => {
               name="password"
               id="password"
               placeholder="비밀번호를 입력하세요"
-              onChange={handleChangeInfo}
+              onChange={handleForm}
               ref={passwordInputRef}
               style={{ fontSize: "14px" }}
             />
@@ -141,7 +145,7 @@ const SignUpComponent = () => {
               name="confirmPassword"
               id="confirmPassword"
               placeholder="비밀번호를 다시 입력하세요"
-              onChange={handleChangeInfo}
+              onChange={handleForm}
               ref={confirmPasswordInputRef}
               style={{ fontSize: "14px" }}
             />
@@ -159,7 +163,7 @@ const SignUpComponent = () => {
               type="button"
               className="btn btn-light common-btn"
               style={{ flex: "1", marginLeft: "12px" }}
-              onClick={handleSaveForm}
+              onClick={handleSubmit}
             >
               계정 생성
             </button>
